@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Runner
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,7 +43,11 @@
  * @since      File available since Release 2.1.0
  */
 
-require_once 'File/Iterator/Factory.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Runner/TestCollector.php';
+require_once 'PHPUnit/Util/FilterIterator.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * A test collector that collects tests from one or more directories
@@ -58,12 +62,12 @@ require_once 'File/Iterator/Factory.php';
  * $suite->addTestFiles($testCollector->collectTests());
  * </code>
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Runner
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.1.0
  */
@@ -107,20 +111,31 @@ class PHPUnit_Runner_IncludePathTestCollector implements PHPUnit_Runner_TestColl
     }
 
     /**
-     * @return File_Iterator
+     * @return array
      */
     public function collectTests()
     {
-        $iterator = File_Iterator_Factory::getFileIterator(
-          $this->paths, $this->suffixes, $this->prefixes
+        $pathIterator = new AppendIterator;
+        $result       = array();
+
+        foreach ($this->paths as $path) {
+            $pathIterator->append(
+              new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($path)
+              )
+            );
+        }
+
+        $filterIterator = new PHPUnit_Util_FilterIterator(
+          $pathIterator, $this->suffixes, $this->prefixes
         );
 
         if ($this->filterIterator !== NULL) {
             $class          = new ReflectionClass($this->filterIterator);
-            $filterIterator = $class->newInstance($iterator);
+            $filterIterator = $class->newInstance($filterIterator);
         }
 
-        return $iterator;
+        return $filterIterator;
     }
 
     /**
@@ -142,3 +157,4 @@ class PHPUnit_Runner_IncludePathTestCollector implements PHPUnit_Runner_TestColl
         }
     }
 }
+?>

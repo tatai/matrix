@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Framework_Constraint
  * @author     Kore Nordmann <kn@ez.no>
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
@@ -43,6 +43,12 @@
  * @link       http://www.phpunit.de/
  * @since      File available since Release 3.0.0
  */
+
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/Type.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * Constraint that checks if one value is equal to another.
@@ -53,13 +59,13 @@
  *
  * The expected value is passed in the constructor.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Framework_Constraint
  * @author     Kore Nordmann <kn@ez.no>
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.0.0
  */
@@ -83,7 +89,7 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
     /**
      * @var boolean
      */
-    protected $canonicalize = FALSE;
+    protected $canonicalizeEol = FALSE;
 
     /**
      * @var boolean
@@ -94,10 +100,10 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
      * @param mixed   $value
      * @param float   $delta
      * @param integer $maxDepth
-     * @param boolean $canonicalize
+     * @param boolean $canonicalizeEol
      * @param boolean $ignoreCase
      */
-    public function __construct($value, $delta = 0, $maxDepth = 10, $canonicalize = FALSE, $ignoreCase = FALSE)
+    public function __construct($value, $delta = 0, $maxDepth = 10, $canonicalizeEol = FALSE, $ignoreCase = FALSE)
     {
         if (!is_numeric($delta)) {
             throw PHPUnit_Util_InvalidArgumentHelper::factory(2, 'numeric');
@@ -107,7 +113,7 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
             throw PHPUnit_Util_InvalidArgumentHelper::factory(3, 'integer');
         }
 
-        if (!is_bool($canonicalize)) {
+        if (!is_bool($canonicalizeEol)) {
             throw PHPUnit_Util_InvalidArgumentHelper::factory(4, 'boolean');
         }
 
@@ -115,11 +121,11 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
             throw PHPUnit_Util_InvalidArgumentHelper::factory(5, 'boolean');
         }
 
-        $this->value        = $value;
-        $this->delta        = $delta;
-        $this->maxDepth     = $maxDepth;
-        $this->canonicalize = $canonicalize;
-        $this->ignoreCase   = $ignoreCase;
+        $this->value           = $value;
+        $this->delta           = $delta;
+        $this->maxDepth        = $maxDepth;
+        $this->canonicalizeEol = $canonicalizeEol;
+        $this->ignoreCase      = $ignoreCase;
     }
 
     /**
@@ -278,7 +284,11 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
                 unset($_b);
             }
 
-            return $a->C14N() == $b->C14N();
+            if (version_compare(PHP_VERSION, '5.2.0RC1', '>=')) {
+                return ($a->C14N() == $b->C14N());
+            } else {
+                return ($a->saveXML() == $b->saveXML());
+            }
         }
 
         if (is_object($a) && is_object($b) &&
@@ -295,7 +305,7 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
             }
 
             if (is_string($a) && is_string($b)) {
-                if ($this->canonicalize && PHP_EOL != "\n") {
+                if ($this->canonicalizeEol && PHP_EOL != "\n") {
                     $a = str_replace(PHP_EOL, "\n", $a);
                     $b = str_replace(PHP_EOL, "\n", $b);
                 }
@@ -321,11 +331,6 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
                     unset($b["\0*\0invocationMocker"]);
                 }
             }
-        }
-
-        if ($this->canonicalize) {
-            sort($a);
-            sort($b);
         }
 
         $keysInB = array_flip(array_keys($b));
@@ -384,3 +389,4 @@ class PHPUnit_Framework_Constraint_IsEqual extends PHPUnit_Framework_Constraint
         return $document->saveXML();
     }
 }
+?>

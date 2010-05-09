@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_Story
  * @author     Mattis Stordalen Flister <mattis@xait.no>
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
@@ -44,16 +44,21 @@
  * @since      File available since Release 3.3.0
  */
 
+require_once 'PHPUnit/Extensions/Story/Step.php';
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * A "Then" step.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_Story
  * @author     Mattis Stordalen Flister <mattis@xait.no>
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.3.0
  * @abstract
@@ -70,3 +75,4 @@ class PHPUnit_Extensions_Story_Then extends PHPUnit_Extensions_Story_Step
         return 'Then';
     }
 }
+?>

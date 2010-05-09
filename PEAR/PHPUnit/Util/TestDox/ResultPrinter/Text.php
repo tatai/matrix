@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util_TestDox
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,15 +43,20 @@
  * @since      File available since Release 2.3.0
  */
 
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/TestDox/ResultPrinter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * Prints TestDox documentation in text format.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util_TestDox
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.1.0
  */
@@ -94,3 +99,4 @@ class PHPUnit_Util_TestDox_ResultPrinter_Text extends PHPUnit_Util_TestDox_Resul
         $this->write("\n");
     }
 }
+?>

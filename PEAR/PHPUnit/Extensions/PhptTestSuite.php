@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_PhptTestCase
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,17 +43,21 @@
  * @since      File available since Release 3.1.4
  */
 
-require_once 'File/Iterator/Factory.php';
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/FilterIterator.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * Suite for .phpt test cases.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_PhptTestCase
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.1.4
  */
@@ -72,8 +76,11 @@ class PHPUnit_Extensions_PhptTestSuite extends PHPUnit_Framework_TestSuite
         if (is_string($directory) && is_dir($directory)) {
             $this->setName($directory);
 
-            $iterator = File_Iterator_Factory::getFileIterator(
-              $directory, '.phpt'
+            $iterator = new PHPUnit_Util_FilterIterator(
+              new RecursiveIteratorIterator(
+                new RecursiveDirectoryIterator($directory)
+              ),
+              '.phpt'
             );
 
             foreach ($iterator as $testFile) {
@@ -84,3 +91,4 @@ class PHPUnit_Extensions_PhptTestSuite extends PHPUnit_Framework_TestSuite
         }
     }
 }
+?>

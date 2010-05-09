@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,16 +43,20 @@
  * @since      File available since Release 3.0.0
  */
 
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * Command-line options parsing class.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Andrei Zmievski <andrei@php.net>
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.0.0
  * @abstract
@@ -72,7 +76,7 @@ class PHPUnit_Util_Getopt
             sort($long_options);
         }
 
-        if (isset($args[0][0]) && $args[0][0] != '-') {
+        if (isset($args[0]{0}) && $args[0]{0} != '-') {
             array_shift($args);
         }
 
@@ -89,13 +93,13 @@ class PHPUnit_Util_Getopt
                 break;
             }
 
-            if ($arg[0] != '-' ||
-                (strlen($arg) > 1 && $arg[1] == '-' && !$long_options)) {
+            if ($arg{0} != '-' ||
+                (strlen($arg) > 1 && $arg{1} == '-' && !$long_options)) {
                 $non_opts = array_merge($non_opts, array_slice($args, $i));
                 break;
             }
 
-            elseif (strlen($arg) > 1 && $arg[1] == '-') {
+            elseif (strlen($arg) > 1 && $arg{1} == '-') {
                 self::parseLongOption(
                   substr($arg, 2), $long_options, $opts, $args
                 );
@@ -116,18 +120,18 @@ class PHPUnit_Util_Getopt
         $argLen = strlen($arg);
 
         for ($i = 0; $i < $argLen; $i++) {
-            $opt     = $arg[$i];
+            $opt     = $arg{$i};
             $opt_arg = NULL;
 
             if (($spec = strstr($short_options, $opt)) === FALSE ||
-                $arg[$i] == ':') {
+                $arg{$i} == ':') {
                 throw new PHPUnit_Framework_Exception(
                   "unrecognized option -- $opt"
                 );
             }
 
-            if (strlen($spec) > 1 && $spec[1] == ':') {
-                if (strlen($spec) > 2 && $spec[2] == ':') {
+            if (strlen($spec) > 1 && $spec{1} == ':') {
+                if (strlen($spec) > 2 && $spec{2} == ':') {
                     if ($i + 1 < $argLen) {
                         $opts[] = array($opt, substr($arg, $i + 1));
                         break;
@@ -176,7 +180,7 @@ class PHPUnit_Util_Getopt
 
             $opt_rest = substr($long_opt, $opt_len);
 
-            if ($opt_rest != '' && $opt[0] != '=' && $i + 1 < $count &&
+            if ($opt_rest != '' && $opt{0} != '=' && $i + 1 < $count &&
                 $opt == substr($long_options[$i+1], 0, $opt_len)) {
                 throw new PHPUnit_Framework_Exception(
                   "option --$opt is ambiguous"
@@ -207,3 +211,4 @@ class PHPUnit_Util_Getopt
         throw new PHPUnit_Framework_Exception("unrecognized option --$opt");
     }
 }
+?>

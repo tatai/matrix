@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util_Skeleton
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,17 +43,22 @@
  * @since      File available since Release 3.3.0
  */
 
-require_once 'Text/Template.php';
+require_once 'PHPUnit/Util/Filesystem.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/Skeleton.php';
+require_once 'PHPUnit/Util/Template.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * Generator for test class skeletons from classes.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util_Skeleton
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.3.0
  */
@@ -262,7 +267,7 @@ class PHPUnit_Util_Skeleton_Test extends PHPUnit_Util_Skeleton
                                 $template .= 'Static';
                             }
 
-                            $methodTemplate = new Text_Template(
+                            $methodTemplate = new PHPUnit_Util_Template(
                               sprintf(
                                 '%s%sTemplate%s%s.tpl',
 
@@ -306,7 +311,7 @@ class PHPUnit_Util_Skeleton_Test extends PHPUnit_Util_Skeleton
                 }
 
                 if (!$assertAnnotationFound) {
-                    $methodTemplate = new Text_Template(
+                    $methodTemplate = new PHPUnit_Util_Template(
                       sprintf(
                         '%s%sTemplate%sIncompleteTestMethod.tpl',
 
@@ -327,7 +332,7 @@ class PHPUnit_Util_Skeleton_Test extends PHPUnit_Util_Skeleton
             }
         }
 
-        $classTemplate = new Text_Template(
+        $classTemplate = new PHPUnit_Util_Template(
           sprintf(
             '%s%sTemplate%sTestClass.tpl',
 
@@ -377,3 +382,4 @@ class PHPUnit_Util_Skeleton_Test extends PHPUnit_Util_Skeleton
         }
     }
 }
+?>

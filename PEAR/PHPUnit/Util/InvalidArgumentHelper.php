@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,15 +43,19 @@
  * @since      File available since Release 3.4.0
  */
 
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * Factory for InvalidArgumentException objects.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.4.0
  */
@@ -64,11 +68,15 @@ class PHPUnit_Util_InvalidArgumentHelper
      */ 
     public static function factory($argument, $type, $value = NULL)
     {
-        $stack = debug_backtrace(FALSE);
+        if (version_compare(PHP_VERSION, '5.2.5', '>=')) {
+            $stack = debug_backtrace(FALSE);
+        } else {
+            $stack = debug_backtrace();
+        }
 
         return new InvalidArgumentException(
           sprintf(
-            'Argument #%d%sof %s::%s() must be a %s',
+            'Argument #%d%sof %s:%s() is no %s',
             $argument,
             $value !== NULL ? ' (' . $value . ')' : ' ',
             $stack[1]['class'],
@@ -78,3 +86,4 @@ class PHPUnit_Util_InvalidArgumentHelper
         );
     }
 }
+?>

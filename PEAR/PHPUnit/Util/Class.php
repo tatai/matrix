@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -47,15 +47,20 @@ if (!defined('T_NAMESPACE')) {
     define('T_NAMESPACE', 377);
 }
 
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/InvalidArgumentHelper.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * Class helpers.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.1.0
  */
@@ -83,6 +88,34 @@ class PHPUnit_Util_Class
         return array_values(
           array_diff(get_declared_classes(), self::$buffer)
         );
+    }
+
+    /**
+     * Stops the collection of loaded classes and
+     * returns the names of the files that declare the loaded classes.
+     *
+     * @return array
+     */
+    public static function collectEndAsFiles()
+    {
+        $result = self::collectEnd();
+        $count  = count($result);
+
+        for ($i = 0; $i < $count; $i++) {
+            $class = new ReflectionClass($result[$i]);
+
+            if ($class->isUserDefined()) {
+                $file = $class->getFileName();
+
+                if (file_exists($file)) {
+                    $result[$i] = $file;
+                } else {
+                    unset($result[$i]);
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -187,6 +220,39 @@ class PHPUnit_Util_Class
     }
 
     /**
+     * Returns the sourcecode of a user-defined class.
+     *
+     * @param  string  $className
+     * @param  string  $methodName
+     * @return mixed
+     */
+    public static function getMethodSource($className, $methodName)
+    {
+        if ($className != 'global') {
+            $function = new ReflectionMethod($className, $methodName);
+        } else {
+            $function = new ReflectionFunction($methodName);
+        }
+
+        $filename = $function->getFileName();
+
+        if (file_exists($filename)) {
+            $file   = file($filename);
+            $result = '';
+            $start  = $function->getStartLine() - 1;
+            $end    = $function->getEndLine() - 1;
+
+            for ($line = $start; $line <= $end; $line++) {
+                $result .= $file[$line];
+            }
+
+            return $result;
+        } else {
+            return FALSE;
+        }
+    }
+
+    /**
      * Returns the package information of a user-defined class.
      *
      * @param  string $className
@@ -261,8 +327,22 @@ class PHPUnit_Util_Class
         while ($class) {
             $attributes = $class->getStaticProperties();
 
-            if (array_key_exists($attributeName, $attributes)) {
-                return $attributes[$attributeName];
+            $key = $attributeName;
+
+            if (isset($attributes[$key])) {
+                return $attributes[$key];
+            }
+
+            $key = "\0*\0" . $attributeName;
+
+            if (isset($attributes[$key])) {
+                return $attributes[$key];
+            }
+
+            $key = "\0" . $class->getName() . "\0" . $attributeName;
+
+            if (isset($attributes[$key])) {
+                return $attributes[$key];
             }
 
             $class = $class->getParentClass();
@@ -306,6 +386,19 @@ class PHPUnit_Util_Class
         }
 
         catch (ReflectionException $e) {
+            // Workaround for http://bugs.php.net/46064
+            if (version_compare(PHP_VERSION, '5.2.7', '<')) {
+                $reflector  = new ReflectionObject($object);
+                $attributes = $reflector->getProperties();
+
+                foreach ($attributes as $_attribute) {
+                    if ($_attribute->getName() == $attributeName) {
+                        $attribute = $_attribute;
+                        break;
+                    }
+                }
+            }
+
             $reflector = new ReflectionObject($object);
 
             while ($reflector = $reflector->getParentClass()) {
@@ -399,3 +492,4 @@ class PHPUnit_Util_Class
         return $result;
     }
 }
+?>

@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_SeleniumTestCase
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,18 +43,25 @@
  * @since      File available since Release 3.0.0
  */
 
-require_once 'File/Iterator/Factory.php';
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Util/Log/Database.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/Test.php';
+require_once 'PHPUnit/Util/XML.php';
+require_once 'PHPUnit/Extensions/SeleniumTestCase/Driver.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * TestCase class that uses Selenium to provide
  * the functionality required for web testing.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_SeleniumTestCase
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.0.0
  */
@@ -64,6 +71,11 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
      * @var    array
      */
     public static $browsers = array();
+
+    /**
+     * @var    boolean
+     */
+    protected $autoStop = TRUE;
 
     /**
      * @var    string
@@ -305,8 +317,8 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
         $result->run($this);
 
         if ($this->collectCodeCoverageInformation) {
-            $result->getCodeCoverage()->append(
-              $this->getCodeCoverage(), $this
+            $result->appendCodeCoverageInformation(
+              $this, $this->getCodeCoverage()
             );
         }
 
@@ -412,11 +424,13 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
             $this->fail(implode("\n", $this->verificationErrors));
         }
 
-        try {
-            $this->stop();
-        }
+        if ($this->autoStop) {
+            try {
+                $this->stop();
+            }
 
-        catch (RuntimeException $e) {
+            catch (RuntimeException $e) {
+            }
         }
     }
 
@@ -434,6 +448,19 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
         }
 
         return $buffer;
+    }
+
+    /**
+     * @param  boolean $autoStop
+     * @throws InvalidArgumentException
+     */
+    public function setAutoStop($autoStop)
+    {
+        if (!is_bool($autoStop)) {
+            throw PHPUnit_Util_InvalidArgumentHelper::factory(1, 'boolean');
+        }
+
+        $this->autoStop = $autoStop;
     }
 
     /**
@@ -993,8 +1020,14 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
      */
     protected static function getSeleneseFiles($directory, $suffix)
     {
-        $files    = array();
-        $iterator = File_Iterator_Factory::getFileIterator($directory, $suffix);
+        $files = array();
+
+        $iterator = new PHPUnit_Util_FilterIterator(
+          new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($directory)
+          ),
+          $suffix
+        );
 
         foreach ($iterator as $file) {
             $files[] = (string)$file;
@@ -1042,11 +1075,13 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
             }
         }
 
-        try {
-            $this->stop();
-        }
+        if ($this->autoStop) {
+            try {
+                $this->stop();
+            }
 
-        catch (RuntimeException $e) {
+            catch (RuntimeException $e) {
+            }
         }
 
         if ($e instanceof PHPUnit_Framework_ExpectationFailedException) {
@@ -1060,3 +1095,4 @@ abstract class PHPUnit_Extensions_SeleniumTestCase extends PHPUnit_Framework_Tes
         throw $e;
     }
 }
+?>

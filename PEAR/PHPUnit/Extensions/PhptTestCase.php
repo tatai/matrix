@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_PhptTestCase
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -52,18 +52,21 @@ if (PHPUnit_Util_Filesystem::fileExistsInIncludePath('PEAR/RunTest.php')) {
     PHPUnit_Util_Filesystem::collectEndAndAddToBlacklist();
 }
 
-require_once 'PHP/CodeCoverage.php';
-require_once 'PHP/Timer.php';
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Extensions/PhptTestCase/Logger.php';
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * Wrapper to run .phpt test cases.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Extensions_PhptTestCase
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.1.4
  */
@@ -167,9 +170,9 @@ class PHPUnit_Extensions_PhptTestCase implements PHPUnit_Framework_Test, PHPUnit
 
         $result->startTest($this);
 
-        PHP_Timer::start();
+        PHPUnit_Util_Timer::start();
         $buffer       = $runner->run($this->filename, $options);
-        $time         = PHP_Timer::stop();
+        $time         = PHPUnit_Util_Timer::stop();
         error_reporting($currentErrorReporting);
         $base         = basename($this->filename);
         $path         = dirname($this->filename);
@@ -181,9 +184,7 @@ class PHPUnit_Extensions_PhptTestCase implements PHPUnit_Framework_Test, PHPUnit
         $phpFile      = $path . DIRECTORY_SEPARATOR . str_replace('.phpt', '.php', $base);
 
         if (file_exists($phpFile)) {
-            PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(
-              $phpFile, 'TESTS'
-            );
+            PHPUnit_Util_Filter::addFileToFilter($phpFile, 'TESTS');
         }
 
         if (is_object($buffer) && $buffer instanceof PEAR_Error) {
@@ -219,7 +220,7 @@ class PHPUnit_Extensions_PhptTestCase implements PHPUnit_Framework_Test, PHPUnit
             eval('$coverageData = ' . file_get_contents($coverageFile) . ';');
             unset($coverageData[$phpFile]);
 
-            $result->getCodeCoverage()->append($coverageData, $this);
+            $result->appendCodeCoverageInformation($this, $coverageData);
             unlink($coverageFile);
         }
 
@@ -260,3 +261,4 @@ class PHPUnit_Extensions_PhptTestCase implements PHPUnit_Framework_Test, PHPUnit
         return $this->filename;
     }
 }
+?>

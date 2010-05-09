@@ -43,6 +43,12 @@
  * @since      File available since Release 2.0.0
  */
 
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Extensions/TestDecorator.php';
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * A Decorator that runs a test repeatedly.
  *
@@ -51,29 +57,29 @@
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.0.0
  */
 class PHPUnit_Extensions_RepeatedTest extends PHPUnit_Extensions_TestDecorator
 {
     /**
-     * @var mixed
+     * @var    mixed
      */
     protected $filter = FALSE;
 
     /**
-     * @var array
+     * @var    array
      */
     protected $groups = array();
 
     /**
-     * @var array
+     * @var    array
      */
     protected $excludeGroups = array();
 
     /**
-     * @var integer
+     * @var    integer
      */
     protected $timesRepeat = 1;
 
@@ -96,8 +102,8 @@ class PHPUnit_Extensions_RepeatedTest extends PHPUnit_Extensions_TestDecorator
             $timesRepeat >= 0) {
             $this->timesRepeat = $timesRepeat;
         } else {
-            throw PHPUnit_Util_InvalidArgumentHelper::factory(
-              2, 'positive integer'
+            throw new InvalidArgumentException(
+              'Argument 2 must be a positive integer.'
             );
         }
 
@@ -149,3 +155,4 @@ class PHPUnit_Extensions_RepeatedTest extends PHPUnit_Extensions_TestDecorator
         return $result;
     }
 }
+?>

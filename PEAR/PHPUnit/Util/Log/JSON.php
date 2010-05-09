@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util_Log
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,15 +43,22 @@
  * @since      File available since Release 3.0.0
  */
 
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/Printer.php';
+require_once 'PHPUnit/Util/Test.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * A TestListener that generates JSON messages.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util_Log
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.0.0
  */
@@ -163,7 +170,7 @@ class PHPUnit_Util_Log_JSON extends PHPUnit_Util_Printer implements PHPUnit_Fram
           'tests' => count($suite)
         );
 
-        $this->write(json_encode($message));
+        $this->write($this->encode($message));
     }
 
     /**
@@ -219,6 +226,56 @@ class PHPUnit_Util_Log_JSON extends PHPUnit_Util_Printer implements PHPUnit_Fram
           'message' => $message
         );
 
-        $this->write(json_encode($message));
+        $this->write($this->encode($message));
+    }
+
+    /**
+     * @param  array $message
+     * @return string
+     */
+    protected function encode($message)
+    {
+        if (function_exists('json_encode')) {
+            return json_encode($message);
+        }
+
+        $first  = TRUE;
+        $result = '';
+
+        if (is_scalar($message)) {
+            $message = array ($message);
+        }
+
+        foreach ($message as $key => $value) {
+            if (!$first) {
+                $result .= ',';
+            } else {
+                $first = FALSE;
+            }
+
+            $result .= sprintf('"%s":', $this->escape($key));
+
+            if (is_array($value) || is_object($value)) {
+                $result .= sprintf('%s', $this->encode($value));
+            } else {
+                $result .= sprintf('"%s"', $this->escape($value));
+            }
+        }
+
+        return '{' . $result . '}';
+    }
+
+    /**
+     * @param  string $value
+     * @return string
+     */
+    protected function escape($value)
+    {
+        return str_replace(
+          array("\\",   "\"", "/",  "\b", "\f", "\n", "\r", "\t"),
+          array('\\\\', '\"', '\/', '\b', '\f', '\n', '\r', '\t'),
+          $value
+        );
     }
 }
+?>

@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,11 +43,15 @@
  * @since      File available since Release 3.4.0
  */
 
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * Utility methods for PHP sub-processes.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Util
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -106,8 +110,8 @@ class PHPUnit_Util_PHP
     public static function getPhpBinary()
     {
         if (self::$phpBinary === NULL) {
-            if (is_readable('@php_bin@')) {
-                self::$phpBinary = '@php_bin@';
+            if (is_readable('/usr/local/php5/bin/php')) {
+                self::$phpBinary = '/usr/local/php5/bin/php';
             }
 
             else if (PHP_SAPI == 'cli' && isset($_SERVER['_']) &&
@@ -130,22 +134,16 @@ class PHPUnit_Util_PHP
     /**
      * Runs a single job (PHP code) using a separate PHP process.
      *
-     * @param  string                       $job
-     * @param  PHPUnit_Framework_TestCase   $test
-     * @param  PHPUnit_Framework_TestResult $result
-     * @return array|null
+     * @param  string $job
+     * @return string
      */
-    public static function runJob($job, PHPUnit_Framework_Test $test = NULL, PHPUnit_Framework_TestResult $result = NULL)
+    public static function runJob($job)
     {
         $process = proc_open(
           self::getPhpBinary(), self::$descriptorSpec, $pipes
         );
 
         if (is_resource($process)) {
-            if ($result !== NULL) {
-                $result->startTest($test);
-            }
-
             fwrite($pipes[0], $job);
             fclose($pipes[0]);
 
@@ -157,90 +155,8 @@ class PHPUnit_Util_PHP
 
             proc_close($process);
 
-            if ($result !== NULL) {
-                self::processChildResult($test, $result, $stdout, $stderr);
-            } else {
-                return array('stdout' => $stdout, 'stderr' => $stderr);
-            }
+            return array('stdout' => $stdout, 'stderr' => $stderr);
         }
-    }
-
-    /**
-     * Runs a single job (PHP code) using a separate PHP process.
-     *
-     * @param PHPUnit_Framework_TestCase   $test
-     * @param PHPUnit_Framework_TestResult $result
-     * @param string                       $stdout
-     * @param string                       $stderr
-     * @since Method available since Release 3.5.0
-     */
-    protected static function processChildResult(PHPUnit_Framework_Test $test, PHPUnit_Framework_TestResult $result, $stdout, $stderr)
-    {
-        if (!empty($stderr)) {
-            $time = 0;
-            $result->addError(
-              $test,
-              new RuntimeException(trim($stderr)), $time
-            );
-        } else {
-            $childResult = @unserialize($stdout);
-
-            if ($childResult !== FALSE) {
-                if (!empty($childResult['output'])) {
-                    print $childResult['output'];
-                }
-
-                $test->setResult($childResult['testResult']);
-                $test->addToAssertionCount($childResult['numAssertions']);
-
-                $childResult = $childResult['result'];
-
-                if ($result->getCollectCodeCoverageInformation()) {
-                    $codeCoverageInformation = $childResult->getRawCodeCoverageInformation();
-
-                    $result->getCodeCoverage()->append(
-                      $codeCoverageInformation[0], $test
-                    );
-                }
-
-                $time           = $childResult->time();
-                $notImplemented = $childResult->notImplemented();
-                $skipped        = $childResult->skipped();
-                $errors         = $childResult->errors();
-                $failures       = $childResult->failures();
-
-                if (!empty($notImplemented)) {
-                    $result->addError(
-                      $test, $notImplemented[0]->thrownException(), $time
-                    );
-                }
-
-                else if (!empty($skipped)) {
-                    $result->addError(
-                      $test, $skipped[0]->thrownException(), $time
-                    );
-                }
-
-                else if (!empty($errors)) {
-                    $result->addError(
-                      $test, $errors[0]->thrownException(), $time
-                    );
-                }
-
-                else if (!empty($failures)) {
-                    $result->addFailure(
-                      $test, $failures[0]->thrownException(), $time
-                    );
-                }
-            } else {
-                $time = 0;
-                $result->addError(
-                  $test,
-                  new RuntimeException(trim($stdout)), $time
-                );
-            }
-        }
-
-        $result->endTest($test, $time);
     }
 }
+?>

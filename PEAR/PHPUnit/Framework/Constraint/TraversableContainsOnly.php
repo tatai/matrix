@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Framework_Constraint
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,16 +43,22 @@
  * @since      File available since Release 3.1.4
  */
 
+require_once 'PHPUnit/Framework.php';
+require_once 'PHPUnit/Util/Filter.php';
+require_once 'PHPUnit/Util/Type.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
 /**
  * Constraint that asserts that the Traversable it is applied to contains
  * only values of a given type.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Framework_Constraint
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 3.1.4
  */
@@ -113,3 +119,4 @@ class PHPUnit_Framework_Constraint_TraversableContainsOnly extends PHPUnit_Frame
         return 'contains only values of type "' . $this->type . '"';
     }
 }
+?>

@@ -34,8 +34,8 @@
  * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Framework
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
@@ -43,7 +43,16 @@
  * @since      File available since Release 2.0.0
  */
 
-require_once 'PHP/CodeCoverage.php';
+require_once 'PHPUnit/Framework.php';
+
+require_once 'PHPUnit/Runner/BaseTestRunner.php';
+require_once 'PHPUnit/Util/Class.php';
+require_once 'PHPUnit/Util/Fileloader.php';
+require_once 'PHPUnit/Util/InvalidArgumentHelper.php';
+require_once 'PHPUnit/Util/Test.php';
+require_once 'PHPUnit/Util/TestSuiteIterator.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
 /**
  * A TestSuite is a composite of Tests. It runs a collection of test cases.
@@ -73,12 +82,12 @@ require_once 'PHP/CodeCoverage.php';
  * This constructor creates a suite with all the methods starting with
  * "test" that take no arguments.
  *
+ * @category   Testing
  * @package    PHPUnit
- * @subpackage Framework
  * @author     Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @copyright  2002-2010 Sebastian Bergmann <sb@sebastian-bergmann.de>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License
- * @version    Release: @package_version@
+ * @version    Release: 3.4.11
  * @link       http://www.phpunit.de/
  * @since      Class available since Release 2.0.0
  */
@@ -97,6 +106,13 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
      * @var    boolean
      */
     protected $backupStaticAttributes = NULL;
+
+    /**
+     * Fixture that is shared between the tests of this test suite.
+     *
+     * @var    mixed
+     */
+    protected $sharedFixture;
 
     /**
      * The name of the test suite.
@@ -184,9 +200,7 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
         $filename = $theClass->getFilename();
 
         if (strpos($filename, 'eval()') === FALSE) {
-            PHP_CodeCoverage::getInstance()->filter()->addFileToBlacklist(
-              realpath($filename), 'TESTS'
-            );
+            PHPUnit_Util_Filter::addFileToFilter(realpath($filename), 'TESTS');
         }
 
         if ($name != '') {
@@ -353,6 +367,8 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
         }
 
         if (file_exists($filename) && substr($filename, -5) == '.phpt') {
+            require_once 'PHPUnit/Extensions/PhptTestCase.php';
+
             $this->addTest(
               new PHPUnit_Extensions_PhptTestCase($filename, $phptOptions)
             );
@@ -665,6 +681,7 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
             if ($test instanceof PHPUnit_Framework_TestSuite) {
                 $test->setBackupGlobals($this->backupGlobals);
                 $test->setBackupStaticAttributes($this->backupStaticAttributes);
+                $test->setSharedFixture($this->sharedFixture);
 
                 $test->run(
                   $result, $filter, $groups, $excludeGroups, $processIsolation
@@ -705,6 +722,7 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
                         $test->setBackupStaticAttributes(
                           $this->backupStaticAttributes
                         );
+                        $test->setSharedFixture($this->sharedFixture);
                         $test->setRunTestInSeparateProcess($processIsolation);
                     }
 
@@ -714,7 +732,7 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
         }
 
         if ($this->testCase &&
-            method_exists($this->name, 'tearDownAfterClass')) {
+            method_exists($this->name, 'setUpBeforeClass')) {
             call_user_func(array($this->name, 'tearDownAfterClass'));
         }
 
@@ -883,6 +901,17 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
     }
 
     /**
+     * Sets the shared fixture for the tests of this test suite.
+     *
+     * @param  mixed $sharedFixture
+     * @since  Method available since Release 3.1.0
+     */
+    public function setSharedFixture($sharedFixture)
+    {
+        $this->sharedFixture = $sharedFixture;
+    }
+
+    /**
      * Returns an iterator for this test suite.
      *
      * @return RecursiveIteratorIterator
@@ -915,3 +944,4 @@ class PHPUnit_Framework_TestSuite implements PHPUnit_Framework_Test, PHPUnit_Fra
     {
     }
 }
+?>

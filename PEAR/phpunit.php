@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+ini_set('include_path', dirname(__FILE__) . ':' . ini_get('include_path'));
 /* PHPUnit
  *
  * Copyright (c) 2002-2010, Sebastian Bergmann <sb@sebastian-bergmann.de>.
@@ -35,19 +36,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-require_once 'PHP/CodeCoverage/Filter.php';
-PHP_CodeCoverage_Filter::getInstance()->addFileToBlacklist(__FILE__, 'PHPUNIT');
-
 if (extension_loaded('xdebug')) {
-    xdebug_disable();
+    ini_set('xdebug.show_exception_trace', 0);
 }
 
-if (strpos('@php_bin@', '@php_bin') === 0) {
+if (strpos('/usr/local/php5/bin/php', '@php_bin') === 0) {
     set_include_path(dirname(__FILE__) . PATH_SEPARATOR . get_include_path());
 }
 
-require_once 'PHPUnit/Autoload.php';
+require_once 'PHPUnit/Util/Filter.php';
+
+PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
+
+require 'PHPUnit/TextUI/Command.php';
 
 define('PHPUnit_MAIN_METHOD', 'PHPUnit_TextUI_Command::main');
 
 PHPUnit_TextUI_Command::main();
+?>
