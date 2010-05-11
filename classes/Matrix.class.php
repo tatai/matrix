@@ -62,4 +62,42 @@ class Matrix {
 	private function _checkValidPosition($x, $y) {
 		return ($this->_dims[0] > $x || $this->_dims[1] > $y);
 	}
+
+	public function returnAsArray() {
+		return $this->_data;
+	}
+
+	public function isEqual(Matrix $matrix) {
+		return (strcmp(serialize($this->returnAsArray()), serialize($matrix->returnAsArray())) == 0);
+	}
+
+	public function multiplyRowBy($row, $value) {
+		for($i = 0; $i < $this->getSize(1); $i++) {
+			$this->_data[$i][$row] *= $value;
+		}
+	}
+
+	public function multiplyColumnBy($column, $value) {
+		for($i = 0; $i < $this->getSize(2); $i++) {
+			$this->_data[$column][$i] *= $value;
+		}
+	}
+
+	public function substractRow($targetRow, $fromRow) {
+		for($i = 0; $i < $this->getSize(1); $i++) {
+			$this->_data[$i][$targetRow] -= $this->_data[$fromRow][$i];
+		}
+	}
+
+	public function debug() {
+		for($i = 0; $i < $this->getSize(1); $i++) {
+			$row = array();
+			for($j = 0; $j < $this->getSize(2); $j++) {
+				$row[] = $this->_data[$j][$i];
+			}
+
+			print implode(' ', $row) . "\n";
+		}
+		print "\n";
+	}
 }
