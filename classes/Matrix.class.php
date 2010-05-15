@@ -133,6 +133,23 @@ class Matrix {
 		}
 	}
 
+	public function swapRows($firstRow, $secondRow) {
+		$interchange = array();
+		for($i = 0; $i < $this->getSize(1); $i++) {
+			$interchange[] = $this->_data[$i][$firstRow];
+		}
+		for($i = 0; $i < $this->getSize(1); $i++) {
+			$this->_data[$i][$firstRow] = $this->_data[$i][$secondRow];
+			$this->_data[$i][$secondRow] = $interchange[$i];
+		}
+	}
+
+	public function swapColumns($firstColumn, $secondColumn) {
+		$interchange = $this->_data[$firstColumn];
+		$this->_data[$firstColumn] = $this->_data[$secondColumn];
+		$this->_data[$secondColumn] = $interchange;
+	}
+
 	public function debug() {
 		for($j = 0; $j < $this->getSize(2); $j++) {
 			$row = array();
