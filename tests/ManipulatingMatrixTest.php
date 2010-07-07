@@ -4,16 +4,6 @@ require_once dirname(__FILE__) . '/../classes/Matrix.class.php';
 
 class ManipulatingMatrix extends PHPUnit_Framework_TestCase {
 	/**
-	 * 
-	 * @var Matrix
-	 */
-	private $_matrix = null;
-
-	public function setUp() {
-		$this->_matrix = new Matrix();
-	}
-
-	/**
 	 * @test
 	 */
 	public function swapingTwoRows() {
@@ -21,18 +11,18 @@ class ManipulatingMatrix extends PHPUnit_Framework_TestCase {
 			array(1, 3, 5),
 			array(2, 4, 6)
 		);
-		$this->_matrix->initFromArray(2, 3, $data);
+		$matrix = MatrixFactory::createFromArray(2, 3, $data);
 		
 		$shouldBeData = array(
 			array(3, 1, 5),
 			array(4, 2, 6)
 		);
-		$shouldBe = new Matrix();
-		$shouldBe->initFromArray(2, 3, $shouldBeData);
+		$shouldBe = MatrixFactory::createFromArray(2, 3, $shouldBeData);
 		
-		$this->_matrix->swapRows(0, 1);
+		$operations = new MatrixRowColumnOperations();
+		$operations->swapRows($matrix, 0, 1);
 		
-		$this->assertTrue($this->_matrix->isEqual($shouldBe));
+		$this->assertTrue($matrix->isEqual($shouldBe));
 	}
 
 	/**
@@ -44,18 +34,18 @@ class ManipulatingMatrix extends PHPUnit_Framework_TestCase {
 			array(2, 5),
 			array(3, 6)
 		);
-		$this->_matrix->initFromArray(3, 2, $data);
+		$matrix = MatrixFactory::createFromArray(3, 2, $data);
 		
 		$shouldBeData = array(
 			array(2, 5),
 			array(1, 4),
 			array(3, 6)
 				);
-		$shouldBe = new Matrix();
-		$shouldBe->initFromArray(3, 2, $shouldBeData);
+		$shouldBe = MatrixFactory::createFromArray(3, 2, $shouldBeData);
+
+		$operations = new MatrixRowColumnOperations();
+		$operations->swapColumns($matrix, 0, 1);
 		
-		$this->_matrix->swapColumns(0, 1);
-		
-		$this->assertTrue($this->_matrix->isEqual($shouldBe));
+		$this->assertTrue($matrix->isEqual($shouldBe));
 	}
 }

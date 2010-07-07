@@ -3,35 +3,18 @@ class Matrix {
 	private $_dims = null;
 	private $_data = null;
 
-	public function __construct() {
-	}
-
-	public function initWithValue($x, $y, $value = null) {
+	public function __construct($x, $y, $fillValue = null) {
 		$this->_dims = array($x, $y);
-		$this->_initEmptyArray($x, $y, $value);
+		$this->_initWithValue($fillValue);
 	}
 
-	private function _initEmptyArray($x, $y, $value) {
+	private function _initWithValue($value = null) {
+		$x = $this->getSize(1);
+		$y = $this->getSize(2);
+
 		$row = array_fill(0, $y, $value);
 		for($i = 0; $i < $x; $i++) {
 			$this->_data[] = $row;
-		}
-	}
-
-	public function initFromArray($x, $y, $values, $fillValue = 0) {
-		$this->_dims = array($x, $y);
-		for($i = 0; $i < $x; $i++) {
-			if(!isset($values[$i])) {
-				// Todo $fillValue
-				$this->_data[$i] = array_fill(0, $y, $fillValue);
-			}
-			else if(count($values[$i]) < $y) {
-				// Completamos con $fillValue
-				$this->_data[$i] = array_merge($values[$i], array_fill(0, $y - count($values[$y]), $fillValue));
-			}
-			else if(count($values[$i]) >= $y) {
-				$this->_data[$i] = array_slice($values[$i], 0, $y);
-			}
 		}
 	}
 
@@ -115,39 +98,33 @@ class Matrix {
 		return (strcmp(serialize($this->returnAsArray()), serialize($matrix->returnAsArray())) == 0);
 	}
 
-	public function multiplyRowBy($row, $value) {
-		for($i = 0; $i < $this->getSize(1); $i++) {
-			$this->_data[$i][$row] *= $value;
+	/**
+	 * 
+	 *
+	 * @param $index integer row index (starting at 0)
+	 * @return MatrixRow
+	 */
+	public function getRow($index) {
+		include_once(dirname(__FILE__) . '/MatrixRow.class.php');
+		$size = $this->getSize(1);
+		
+		$row = array();
+		for($i = 0; $i < $size; $i++) {
+			$row[] = $this->_data[$i][$index];
 		}
+
+		return new MatrixRow($row);
 	}
 
-	public function multiplyColumnBy($column, $value) {
-		for($i = 0; $i < $this->getSize(2); $i++) {
-			$this->_data[$column][$i] *= $value;
-		}
-	}
-
-	public function substractRow($targetRow, $fromRow) {
-		for($i = 0; $i < $this->getSize(1); $i++) {
-			$this->_data[$i][$targetRow] -= $this->_data[$fromRow][$i];
-		}
-	}
-
-	public function swapRows($firstRow, $secondRow) {
-		$interchange = array();
-		for($i = 0; $i < $this->getSize(1); $i++) {
-			$interchange[] = $this->_data[$i][$firstRow];
-		}
-		for($i = 0; $i < $this->getSize(1); $i++) {
-			$this->_data[$i][$firstRow] = $this->_data[$i][$secondRow];
-			$this->_data[$i][$secondRow] = $interchange[$i];
-		}
-	}
-
-	public function swapColumns($firstColumn, $secondColumn) {
-		$interchange = $this->_data[$firstColumn];
-		$this->_data[$firstColumn] = $this->_data[$secondColumn];
-		$this->_data[$secondColumn] = $interchange;
+	/**
+	 * 
+	 *
+	 * @param $index integer row index (starting at 0)
+	 * @return MatrixRow
+	 */
+	public function getColumn($index) {
+		include_once(dirname(__FILE__) . '/MatrixColumn.class.php');
+		return new MatrixColumn($this->_data[$index]);
 	}
 
 	public function debug() {

@@ -22,12 +22,14 @@ class MatrixOperations {
 	}
 
 	private function _reduceColumn($column, Matrix $matrix, Matrix $identity = null) {
+		$operations = new MatrixRowColumnOperations();
+
 		$baseValue = $matrix->get($column, $column);
 		$ratio = 1 / $baseValue;
 		
-		$matrix->multiplyRowBy($column, $ratio);
+		$operations->multiplyRowBy($matrix, $column, $ratio);
 		if(!is_null($identity)) {
-			$identity->multiplyRowBy($column, $ratio);
+			$operations->multiplyRowBy($identity, $column, $ratio);
 		}
 		
 		for($i = 0; $i < $matrix->getSize(2); $i++) {
@@ -56,8 +58,7 @@ class MatrixOperations {
 	}
 
 	private function _createIdentity($size) {
-		$matrix = new Matrix();
-		$matrix->initWithValue($size, $size, 0);
+		$matrix = MatrixFactory::createWithInitialValue($size, $size, 0);
 		
 		for($i = 0; $i < $size; $i++) {
 			$matrix->set($i, $i, 1);
@@ -82,8 +83,7 @@ class MatrixOperations {
 		
 		$newSize = $left->getSize(1) + $right->getSize(1);
 		
-		$matrix = new Matrix();
-		$matrix->initWithValue($newSize, $left->getSize(2), 0);
+		$matrix = MatrixFactory::createWithInitialValue($newSize, $left->getSize(2), 0);
 		
 		for($i = 0; $i < $left->getSize(1); $i++) {
 			for($j = 0; $j < $left->getSize(2); $j++) {
@@ -106,5 +106,17 @@ class MatrixOperations {
 		}
 		
 		return $workingCopy;
+	}
+	
+	public function transpose(Matrix $matrix) {
+		$traspose = MatrixFactory::createWithInitialValue($matrix->getSize(2), $matrix->getSize(1), 0);
+		
+		for($i = 0; $i < $matrix->getSize(1); $i++) {
+			for($j = 0; $j < $matrix->getSize(2); $j++) {
+				$traspose->set($j, $i, $matrix->get($i, $j));
+			}
+		}
+				
+		return $traspose;
 	}
 }

@@ -1,19 +1,25 @@
 <?php
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once dirname(__FILE__) . '/../classes/Matrix.class.php';
-
 class EmptyMatrixTest extends PHPUnit_Framework_TestCase {
-	private $_matrix = null;
+	/**
+	 * @test
+	 */
+	public function returnsValidDimensionSize() {
+		$x = rand(1,10);
+		$y = rand(1,10);
+		$matrix = new Matrix($x, $y);
 
-	public function setUp() {
-		$this->_matrix = new Matrix();
+		$this->assertEquals($x, $matrix->getSize(1));
+		$this->assertEquals($y, $matrix->getSize(2));
 	}
 
 	/**
 	 * @test
 	 */
-	public function askingForSizeAlwaysReturnsFalse() {
-		$this->assertFalse($this->_matrix->getSize(1));
-		$this->assertFalse($this->_matrix->getSize(2));
+	public function returnFalseWhenAskingForUnexistingDimensionSize() {
+		$x = rand(1,10);
+		$y = rand(1,10);
+		$matrix = new Matrix(rand(1,10), rand(1,10));
+
+		$this->assertFalse($matrix->getSize(3));
 	}
 }

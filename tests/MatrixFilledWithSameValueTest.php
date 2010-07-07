@@ -2,7 +2,7 @@
 require_once 'PHPUnit/Framework/TestCase.php';
 require_once dirname(__FILE__) . '/../classes/Matrix.class.php';
 
-class MatrixFilledWithSameValue extends PHPUnit_Framework_TestCase {
+class MatrixFilledWithSameValueTest extends PHPUnit_Framework_TestCase {
 	private $_matrix = null;
 	private $_x = null;
 	private $_y = null;
@@ -13,23 +13,14 @@ class MatrixFilledWithSameValue extends PHPUnit_Framework_TestCase {
 		$this->_y = 3;
 		$this->_filled_with = 3;
 		
-		$this->_matrix = new Matrix();
-		$this->_matrix->initWithValue($this->_x, $this->_y, $this->_filled_with);
+		$this->_matrix = MatrixFactory::createWithInitialValue($this->_x, $this->_y, $this->_filled_with);
 	}
-
+	
 	/**
 	 * @test
 	 */
-	public function returnsValidDimensionSize() {
-		$this->assertEquals(1, $this->_matrix->getSize(1));
-		$this->assertEquals(3, $this->_matrix->getSize(2));
-	}
-
-	/**
-	 * @test
-	 */
-	public function returnFalseWhenAskingForUnexistingDimensionSize() {
-		$this->assertFalse($this->_matrix->getSize(3));
+	public function givenValueMustBeNumeric() {
+		$this->assertNull(MatrixFactory::createWithInitialValue(1, 2, array()));
 	}
 
 	/**

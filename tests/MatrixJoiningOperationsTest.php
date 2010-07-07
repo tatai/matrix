@@ -8,8 +8,7 @@ class MatrixJoiningOperationsTest extends PHPUnit_Framework_TestCase {
 	public function setup() {
 		$this->_operations = new MatrixOperations();
 		
-		$this->_left = new Matrix();		
-		$this->_left->initWithValue(2, 3, 0);
+		$this->_left = MatrixFactory::createWithInitialValue(2, 3, 0);
 		$this->_left->set(0, 0, 2);
 		$this->_left->set(0, 1, 6);
 		$this->_left->set(0, 2, 1);
@@ -17,8 +16,7 @@ class MatrixJoiningOperationsTest extends PHPUnit_Framework_TestCase {
 		$this->_left->set(1, 1, 1);
 		$this->_left->set(1, 2, 3);
 
-		$this->_right = new Matrix();		
-		$this->_right->initWithValue(1, 3, 0);
+		$this->_right = MatrixFactory::createWithInitialValue(1, 3, 0);
 		$this->_right->set(0, 0, 8);
 		$this->_right->set(0, 1, 9);
 		$this->_right->set(0, 2, 10);
@@ -29,8 +27,7 @@ class MatrixJoiningOperationsTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function joiningTwoCompatibleArrays() {
-		$correct = new Matrix();
-		$correct->initWithValue(3, 3, 0);
+		$correct = MatrixFactory::createWithInitialValue(3, 3, 0);
 		$correct->set(0, 0, 2);
 		$correct->set(0, 1, 6);
 		$correct->set(0, 2, 1);
@@ -50,8 +47,7 @@ class MatrixJoiningOperationsTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function joiningTwoIncompatibleArraysReturnsFalse() {
-		$incompatible = new Matrix();
-		$incompatible->initWithValue(2, 2, 0);
+		$incompatible = MatrixFactory::createWithInitialValue(2, 2, 0);
 		$join = $this->_operations->join($this->_left, $incompatible);
 		
 		$this->assertFalse($join);
