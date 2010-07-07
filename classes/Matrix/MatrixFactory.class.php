@@ -30,4 +30,14 @@ class MatrixFactory {
 		
 		return $matrix;
 	}
+	
+	static public function identity($size) {
+		$matrix = new Matrix($size, $size, 0);
+		
+		for($i = 0; $i < $size; $i++) {
+			$matrix->set($i, $i, 1);
+		}
+		
+		return $matrix;
+	}
 }
