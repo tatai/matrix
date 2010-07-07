@@ -1,7 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once dirname(__FILE__) . '/../classes/MatrixColumn.class.php';
-
 class MatrixColumnTest extends PHPUnit_Framework_TestCase {
 	private $_matrix = null;
 

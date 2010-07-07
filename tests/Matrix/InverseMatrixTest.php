@@ -1,8 +1,4 @@
 <?php
-require_once 'PHPUnit/Framework/TestCase.php';
-require_once dirname(__FILE__) . '/../classes/Matrix.class.php';
-require_once dirname(__FILE__) . '/../classes/MatrixOperations.class.php';
-
 class InverseMatrixTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * 
