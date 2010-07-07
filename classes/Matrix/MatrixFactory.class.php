@@ -5,6 +5,13 @@ class MatrixFactory {
 	
 	}
 
+	/**
+	 *
+	 * @param $x int size of first dimension
+	 * @param $y int size of second dimension
+	 * @param $value float initial value
+	 * @return Matrix
+	 */
 	static public function createWithInitialValue($x, $y, $value) {
 		if(!is_numeric($value)) {
 			return null;
@@ -13,6 +20,14 @@ class MatrixFactory {
 		return new Matrix($x, $y, $value);
 	}
 
+	/**
+	 *
+	 * @param $x int size of first dimension
+	 * @param $y int size of second dimension
+	 * @param $values array of data
+	 * @param $value float value to use if there is not value in array
+	 * @return Matrix
+	 */
 	static public function createFromArray($x, $y, $values, $fillValue = 0) {
 		if(!is_array($values)) {
 			return null;
@@ -32,6 +47,11 @@ class MatrixFactory {
 		return $matrix;
 	}
 
+	/**
+	 * 
+	 * @param $size int size of the resulting matrix
+	 * @return Matrix
+	 */
 	static public function identity($size) {
 		$matrix = new Matrix($size, $size, 0);
 		
