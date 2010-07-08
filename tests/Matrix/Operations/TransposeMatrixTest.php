@@ -9,8 +9,6 @@ class TransposeMatrixTest extends PHPUnit_Framework_TestCase {
 	private $_matrix = null;
 
 	public function setUp() {
-		$this->_operations = new MatrixOperations();
-
 		$this->_xSize = 4;
 		$this->_ySize = 3;
 		
@@ -33,14 +31,14 @@ class TransposeMatrixTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function transposeReturnsMatrixObject() {
-		$this->assertTrue($this->_operations->transpose($this->_matrix) instanceof Matrix);
+		$this->assertTrue(MatrixOperations::transpose($this->_matrix) instanceof Matrix);
 	}
 	
 	/**
 	 * @test
 	 */
 	public function returnsSwappedSizes() {
-		$transpose = $this->_operations->transpose($this->_matrix);
+		$transpose = MatrixOperations::transpose($this->_matrix);
 		$this->assertEquals($this->_ySize, $transpose->getSize(1));
 		$this->assertEquals($this->_xSize, $transpose->getSize(2));
 	}
@@ -49,14 +47,14 @@ class TransposeMatrixTest extends PHPUnit_Framework_TestCase {
 	 * @test
 	 */
 	public function transposingTwiceGetSameOriginalMatrix() {
-		$this->assertTrue($this->_matrix->isEqual($this->_operations->transpose($this->_operations->transpose($this->_matrix))));
+		$this->assertTrue($this->_matrix->isEqual(MatrixOperations::transpose(MatrixOperations::transpose($this->_matrix))));
 	}
 	
 	/**
 	 * @test
 	 */
 	public function returnsCorrectValues() {
-		$transpose = $this->_operations->transpose($this->_matrix);
+		$transpose = MatrixOperations::transpose($this->_matrix);
 		
 		$values = array();
 		for($i = 0; $i < $this->_xSize; $i++) {

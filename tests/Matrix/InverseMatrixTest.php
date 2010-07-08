@@ -1,22 +1,12 @@
 <?php
 class InverseMatrixTest extends PHPUnit_Framework_TestCase {
 	/**
-	 * 
-	 * @var MatrixOperations
-	 */
-	private $_operations = null;
-
-	public function setUp() {
-		$this->_operations = new MatrixOperations();
-	}
-
-	/**
 	 * @test
 	 */
 	public function givingNotSquareMatrixReturnsFalse() {
 		$matrix = MatrixFactory::createWithInitialValue(2, 3, 4);
 
-		$this->assertFalse($this->_operations->inverse($matrix));
+		$this->assertFalse(MatrixOperations::inverse($matrix));
 	}
 
 	/**
@@ -35,7 +25,7 @@ class InverseMatrixTest extends PHPUnit_Framework_TestCase {
 		$matrix->set(2, 1, 3);
 		$matrix->set(2, 2, 4);
 		
-		$res = $this->_operations->inverse($matrix);
+		$res = MatrixOperations::inverse($matrix);
 		
 		$shouldBe = MatrixFactory::createWithInitialValue(3, 3, 0);
 		$shouldBe->set(0, 0, 7);
@@ -61,7 +51,7 @@ class InverseMatrixTest extends PHPUnit_Framework_TestCase {
 		);
 		$matrix = MatrixFactory::createFromArray(2, 2, $values);
 		
-		$res = $this->_operations->inverse($matrix);
+		$res = MatrixOperations::inverse($matrix);
 		
 		$values = array(
 			array(-2, 1.5),
@@ -114,7 +104,7 @@ class InverseMatrixTest extends PHPUnit_Framework_TestCase {
 		);
 		$expectedMatrix = MatrixFactory::createFromArray(4, 3, $expected);		
 		
-		$resultFromGJE = $this->_operations->gaussJordanElimination($matrix);
+		$resultFromGJE = MatrixOperations::gaussJordanElimination($matrix);
 		
 		$this->assertTrue($expectedMatrix->isEqual($resultFromGJE));
 	}

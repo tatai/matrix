@@ -1,70 +1,22 @@
 <?php
 class MatrixOperations {
-
-	public function __construct() {
-	
+	private function __construct() {
 	}
 
-	public function inverse(Matrix $matrix) {
+	static public function inverse(Matrix $matrix) {
 		if($matrix->getSize(1) != $matrix->getSize(2)) {
 			return false;
 		}
 		
 		$workingCopy = clone $matrix;
 		
-		$identity = $this->_createIdentity($matrix->getSize(1));
+		$identity = MatrixFactory::identity($matrix->getSize(1));
 		
 		for($i = 0; $i < $matrix->getSize(1); $i++) {
-			$this->_reduceColumn($i, $workingCopy, $identity);
+			self::_reduceColumn($i, $workingCopy, $identity);
 		}
 		
 		return $identity;
-	}
-
-	private function _reduceColumn($column, Matrix $matrix, Matrix $identity = null) {
-		$operations = new MatrixRowColumnOperations();
-
-		$baseValue = $matrix->get($column, $column);
-		$ratio = 1 / $baseValue;
-		
-		$operations->multiplyRowBy($matrix, $column, $ratio);
-		if(!is_null($identity)) {
-			$operations->multiplyRowBy($identity, $column, $ratio);
-		}
-		
-		for($i = 0; $i < $matrix->getSize(2); $i++) {
-			if($i == $column) {
-				continue;
-			}
-			
-			$value = $matrix->get($column, $i);
-			
-			for($j = 0; $j < $matrix->getSize(1); $j++) {
-				//print $j . ' - ' . $i . ' -> ' . $column . ' - ' . $i . "\n";
-				$matrix->set($j, $i, $matrix->get($j, $i) - $matrix->get($j, $column) * $value);
-				if(!is_null($identity)) {
-					$identity->set($j, $i, $identity->get($j, $i) - $identity->get($j, $column) * $value);
-				}
-			}
-			/*
-		print 'parcial: ';
-		$matrix->debug();
-		if(!is_null($identity)) {
-			$identity->debug();
-		}
-		*/
-		
-		}
-	}
-
-	private function _createIdentity($size) {
-		$matrix = MatrixFactory::createWithInitialValue($size, $size, 0);
-		
-		for($i = 0; $i < $size; $i++) {
-			$matrix->set($i, $i, 1);
-		}
-		
-		return $matrix;
 	}
 
 	/**
@@ -76,7 +28,7 @@ class MatrixOperations {
 	 * @param $right Matrix
 	 * @return Matrix if everything goes ok, false otherwise
 	 */
-	public function join(Matrix $left, Matrix $right) {
+	static public function join(Matrix $left, Matrix $right) {
 		if($left->getSize(2) != $right->getSize(2)) {
 			return false;
 		}
@@ -99,16 +51,43 @@ class MatrixOperations {
 		return $matrix;
 	}
 
-	public function gaussJordanElimination(Matrix $matrix) {
+	static public function gaussJordanElimination(Matrix $matrix) {
 		$workingCopy = clone $matrix;
 		for($i = 0; $i < $matrix->getSize(2); $i++) {
-			$this->_reduceColumn($i, $workingCopy);
+			self::_reduceColumn($i, $workingCopy);
 		}
 		
 		return $workingCopy;
 	}
 	
-	public function transpose(Matrix $matrix) {
+	private function _reduceColumn($column, Matrix $matrix, Matrix $identity = null) {
+		$operations = new MatrixRowColumnOperations();
+
+		$baseValue = $matrix->get($column, $column);
+		$ratio = 1 / $baseValue;
+		
+		$operations->multiplyRowBy($matrix, $column, $ratio);
+		if(!is_null($identity)) {
+			$operations->multiplyRowBy($identity, $column, $ratio);
+		}
+		
+		for($i = 0; $i < $matrix->getSize(2); $i++) {
+			if($i == $column) {
+				continue;
+			}
+			
+			$value = $matrix->get($column, $i);
+			
+			for($j = 0; $j < $matrix->getSize(1); $j++) {
+				$matrix->set($j, $i, $matrix->get($j, $i) - $matrix->get($j, $column) * $value);
+				if(!is_null($identity)) {
+					$identity->set($j, $i, $identity->get($j, $i) - $identity->get($j, $column) * $value);
+				}
+			}
+		}
+	}
+
+	static public function transpose(Matrix $matrix) {
 		$traspose = MatrixFactory::createWithInitialValue($matrix->getSize(2), $matrix->getSize(1), 0);
 		
 		for($i = 0; $i < $matrix->getSize(1); $i++) {
