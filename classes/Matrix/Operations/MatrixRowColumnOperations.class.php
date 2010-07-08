@@ -23,6 +23,10 @@ class MatrixRowColumnOperations {
 	}
 
 	public function swapRows(Matrix $matrix, $firstRow, $secondRow) {
+		if($firstRow > $matrix->getSize(2) - 1 || $secondRow > $matrix->getSize(2) - 1) {
+			return false;
+		}
+
 		$interchange = $matrix->getRow($firstRow);
 		
 		while($interchange->current()) {
@@ -33,6 +37,10 @@ class MatrixRowColumnOperations {
 	}
 
 	public function swapColumns(Matrix $matrix, $firstColumn, $secondColumn) {
+		if($firstColumn > $matrix->getSize(1) - 1 || $secondColumn > $matrix->getSize(1) - 1) {
+			return false;
+		}
+
 		$interchange = $matrix->getColumn($firstColumn);
 		
 		while($interchange->current()) {
