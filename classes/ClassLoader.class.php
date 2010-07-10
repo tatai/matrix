@@ -1,6 +1,6 @@
 <?php
 /* 
- * Yet another burndown online generator, http://www.burndowngenerator.com
+ * Matrix http://www.tatai.es
  * Copyright (C) 2010 Francisco José Naranjo <fran.naranjo@gmail.com>
  * 
  * This program is free software: you can redistribute it and/or modify
