@@ -1,5 +1,5 @@
 <?php
-class MultiplyingColumnByScalar extends PHPUnit_Framework_TestCase {
+class MultiplyingColumnByScalarTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * 
 	 * @var Matrix

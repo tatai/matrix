@@ -1,5 +1,5 @@
 <?php
-class MultiplyingRowByScalar extends PHPUnit_Framework_TestCase {
+class MultiplyingRowByScalarTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * 
 	 * @var Matrix
