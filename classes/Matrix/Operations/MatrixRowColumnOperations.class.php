@@ -1,18 +1,30 @@
 <?php
 class MatrixRowColumnOperations {
 
-	public function multiplyRowBy(Matrix $matrix, $row, $value) {
+	static public function multiplyRowBy(Matrix $matrix, $row, $value) {
+		if($row + 1 > $matrix->getSize(2)) {
+			return false;
+		}
+
 		$size = $matrix->getSize(1);
 		for($i = 0; $i < $size; $i++) {
 			$matrix->set($i, $row, $matrix->get($i, $row) * $value);
 		}
+		
+		return true;
 	}
 
-	public function multiplyColumnBy(Matrix $matrix, $column, $value) {
+	static public function multiplyColumnBy(Matrix $matrix, $column, $value) {
+		if($column + 1 > $matrix->getSize(1)) {
+			return false;
+		}
+
 		$size = $matrix->getSize(2);
 		for($i = 0; $i < $size; $i++) {
 			$matrix->set($column, $i, $matrix->get($column, $i) * $value);
 		}
+		
+		return true;
 	}
 
 	public function substractRow(Matrix $matrix, $targetRow, $fromRow) {
