@@ -34,7 +34,7 @@ class MatrixRowColumnOperations {
 		}
 	}
 
-	public function swapRows(Matrix $matrix, $firstRow, $secondRow) {
+	static public function swapRows(Matrix $matrix, $firstRow, $secondRow) {
 		if($firstRow > $matrix->getSize(2) - 1 || $secondRow > $matrix->getSize(2) - 1) {
 			return false;
 		}
@@ -48,7 +48,7 @@ class MatrixRowColumnOperations {
 		}
 	}
 
-	public function swapColumns(Matrix $matrix, $firstColumn, $secondColumn) {
+	static public function swapColumns(Matrix $matrix, $firstColumn, $secondColumn) {
 		if($firstColumn > $matrix->getSize(1) - 1 || $secondColumn > $matrix->getSize(1) - 1) {
 			return false;
 		}

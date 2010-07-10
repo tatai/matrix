@@ -2,12 +2,6 @@
 class SwapingRowsTest extends PHPUnit_Framework_TestCase {
 	/**
 	 * 
-	 * @var MatrixRowColumnOperations
-	 */
-	private $_operations = null;
-
-	/**
-	 * 
 	 * @var Matrix
 	 */
 	private $_matrix = null;
@@ -19,8 +13,6 @@ class SwapingRowsTest extends PHPUnit_Framework_TestCase {
 	private $_matrix_data = null;
 	
 	public function setup() {
-		$this->_operations = new MatrixRowColumnOperations();
-		
 		$this->_matrix_data = array(
 			array(1, 3, 5),
 			array(2, 4, 6)
@@ -33,7 +25,7 @@ class SwapingRowsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function whenFirstRowDoesNotExistsReturnsSameMatrix() {
 		$test = clone $this->_matrix;
-		$this->_operations->swapRows($test, 3, 1);
+		MatrixRowColumnOperations::swapRows($test, 3, 1);
 		
 		$this->assertTrue($this->_matrix->isEqual($test));
 	}
@@ -43,7 +35,7 @@ class SwapingRowsTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function whenSecondRowDoesNotExistsReturnsSameMatrix() {
 		$test = clone $this->_matrix;
-		$this->_operations->swapRows($test, 1, 3);
+		MatrixRowColumnOperations::swapRows($test, 1, 3);
 		
 		$this->assertTrue($this->_matrix->isEqual($test));
 	}
@@ -58,7 +50,7 @@ class SwapingRowsTest extends PHPUnit_Framework_TestCase {
 		);
 		$shouldBe = MatrixFactory::createFromArray(2, 3, $shouldBeData);
 		
-		$this->_operations->swapRows($this->_matrix, 0, 1);
+		MatrixRowColumnOperations::swapRows($this->_matrix, 0, 1);
 		
 		$this->assertTrue($this->_matrix->isEqual($shouldBe));
 	}
