@@ -95,7 +95,6 @@ class Matrix {
 		}
 		
 		return true;
-		return (strcmp(serialize($this->returnAsArray()), serialize($matrix->returnAsArray())) == 0);
 	}
 
 	/**

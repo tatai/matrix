@@ -45,4 +45,24 @@ class ComparingMatrixTest extends PHPUnit_Framework_TestCase {
 		
 		$this->assertFalse($this->_matrix->isEqual($matrix));
 	}
+
+	/**
+	 * @test
+	 */
+	public function havingDifferentNumberOfRowsReturnsFalse() {
+		$matrix = MatrixFactory::createWithInitialValue($this->_matrix->getSize(1) + 1, $this->_matrix->getSize(2), 2);
+		
+		$this->assertFalse($this->_matrix->isEqual($matrix));
+		
+	}
+	
+	/**
+	 * @test
+	 */
+	public function havingDifferentNumberOfColumnsReturnsFalse() {
+		$matrix = MatrixFactory::createWithInitialValue($this->_matrix->getSize(1), $this->_matrix->getSize(2) + 1, 2);
+		
+		$this->assertFalse($this->_matrix->isEqual($matrix));
+		
+	}
 }
