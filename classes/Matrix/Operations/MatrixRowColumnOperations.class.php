@@ -1,5 +1,7 @@
 <?php
 class MatrixRowColumnOperations {
+	private function __construct() {
+	}
 
 	static public function multiplyRowBy(Matrix $matrix, $row, $value) {
 		if($row + 1 > $matrix->getSize(2)) {
@@ -25,13 +27,6 @@ class MatrixRowColumnOperations {
 		}
 		
 		return true;
-	}
-
-	public function substractRow(Matrix $matrix, $targetRow, $fromRow) {
-		$size = $matrix->getSize(1);
-		for($i = 0; $i < $size; $i++) {
-			$matrix->set($i, $targetRow, $matrix->get($fromRow, $i));
-		}
 	}
 
 	static public function swapRows(Matrix $matrix, $firstRow, $secondRow) {

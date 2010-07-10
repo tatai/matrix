@@ -61,14 +61,12 @@ class MatrixOperations {
 	}
 	
 	private function _reduceColumn($column, Matrix $matrix, Matrix $identity = null) {
-		$operations = new MatrixRowColumnOperations();
-
 		$baseValue = $matrix->get($column, $column);
 		$ratio = 1 / $baseValue;
 		
-		$operations->multiplyRowBy($matrix, $column, $ratio);
+		MatrixRowColumnOperations::multiplyRowBy($matrix, $column, $ratio);
 		if(!is_null($identity)) {
-			$operations->multiplyRowBy($identity, $column, $ratio);
+			MatrixRowColumnOperations::multiplyRowBy($identity, $column, $ratio);
 		}
 		
 		for($i = 0; $i < $matrix->getSize(2); $i++) {
